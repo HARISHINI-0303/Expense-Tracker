@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker - Sign Up</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Link to your CSS file for styling -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://e98ye7bn559.exactdn.com/wp-content/uploads/2023/09/Untitled-design-46.jpg?strip=all&lossy=1&ssl=1"); /* Replace 'path/to/your/image.jpg' with the actual path to your image */
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 400px;
+        margin: 80px auto;
+        padding: 20px;
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.8
+        ); /* Add a semi-transparent white background for better readability */
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+      }
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        color: #333;
+        box-sizing: border-box;
+      }
+      button[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      button[type="submit"]:hover {
+        background-color: #0056b3;
+      }
+      p {
+        text-align: center;
+        margin-top: 20px;
+        color: #666;
+      }
+      a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      {% if msg %}
+      <div
+        style="
+          text-align: center;
+          padding: 10px;
+          background-color: #007bff;
+          color: #fff;
+          margin-bottom: 20px;
+        "
+      >
+        {{ msg }}
+      </div>
+      {% endif %}
+      <h1>Sign Up</h1>
+      <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm_password"
+            name="confirm_password"
+            required
+          />
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
+      <!-- Link to your login page -->
+    </div>
+  </body>
+</html>

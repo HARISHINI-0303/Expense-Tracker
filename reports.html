@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense and Income Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Chart.js library -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://media.istockphoto.com/id/1316693862/photo/view-at-financial-details-in-table-thru-magnifying-glass.jpg?s=612x612&w=0&k=20&c=4JhUiM5vnV3UaBigm186FbVD3PLptA8INRyxltHaKCQ="); /* Replace 'path/to/your/image.jpg' with the actual path to your image */
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    "
+  >
+    <!-- Navigation Bar -->
+    <nav style="background-color: #333; color: #fff; padding: 10px">
+      <ul
+        style="
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: space-between;
+        "
+      >
+        <li>
+          <a href="{% url 'main' %}" style="color: #fff; text-decoration: none"
+            >Dashboard</a
+          >
+        </li>
+        <li>
+          <a
+            href="{% url 'logout' %}"
+            style="color: #fff; text-decoration: none"
+            >Logout</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    {% if msg %}
+    <div
+      style="
+        text-align: center;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        margin-bottom: 20px;
+      "
+    >
+      {{ msg }}
+    </div>
+    {% endif %}
+    <form
+      action="{% url 'reports' %}"
+      method="post"
+      style="
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      "
+    >
+      {% csrf_token %}
+      <h1 style="text-align: center; margin-bottom: 20px">
+        Expense and Income Report
+      </h1>
+      <div style="margin-bottom: 20px">
+        <label for="month-select" style="font-weight: bold"
+          >Select Month:</label
+        >
+        <select
+          id="month-select"
+          type="number"
+          name="month"
+          style="padding: 8px; font-size: 16px; margin-right: 10px"
+        >
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+        <label for="year-select" style="font-weight: bold">Select Year:</label>
+        <select
+          id="year-select"
+          name="year"
+          style="padding: 8px; font-size: 16px; margin-right: 10px"
+        ></select>
+        <button
+          type="submit"
+          style="
+            padding: 8px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          "
+        >
+          Generate Report
+        </button>
+      </div>
+      <div id="chart-container" style="text-align: center">
+        <!-- Pie chart will be displayed here -->
+        <canvas id="pie-chart"></canvas>
+      </div>
+
+      <div
+        style="display: flex; justify-content: space-around; margin-top: 20px"
+      >
+        <div style="text-align: center">
+          <h2>Income</h2>
+          <p id="income" style="font-size: 24px; color: green">₹{{ income }}</p>
+        </div>
+        <div style="text-align: center">
+          <h2>Expense</h2>
+          <p id="expense" style="font-size: 24px; color: red">₹{{ expense }}</p>
+        </div>
+        <div style="text-align: center">
+          <h2>Savings</h2>
+          <p id="savings" style="font-size: 24px; color: blue">
+            ₹{{ savings }}
+          </p>
+        </div>
+      </div>
+    </form>
+
+    <script>
+      // Populate year select options dynamically
+      var yearSelect = document.getElementById("year-select");
+      var currentYear = new Date().getFullYear();
+      for (var year = currentYear - 10; year <= currentYear + 10; year++) {
+        var option = document.createElement("option");
+        option.text = year;
+        option.value = year;
+        yearSelect.add(option);
+      }
+
+      // Assuming these variables are passed from Django backend
+      var incomeData = {{ income }};
+      var expenseData = {{ expense }};
+      var savingsData = {{ savings }};
+
+      // Pie chart data
+      var ctx = document.getElementById("pie-chart").getContext("2d");
+      var pieChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: ["Income", "Expense", "Savings"],
+          datasets: [
+            {
+              label: "Budget",
+              data: [incomeData, expenseData, savingsData],
+              backgroundColor: [
+                "rgba(75, 192, 192, 0.6)", // Income color
+                "rgba(255, 99, 132, 0.6)", // Expense color
+                "rgba(54, 162, 235, 0.6)", // Savings color
+              ],
+              borderColor: [
+                "rgba(75, 192, 192, 1)", // Income border color
+                "rgba(255, 99, 132, 1)", // Expense border color
+                "rgba(54, 162, 235, 1)", // Savings border color
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: true,
+            position: "bottom",
+          },
+          title: {
+            display: true,
+            text: "Budget Overview",
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker</title>
+    <link rel="website icon" type="png" href="icon.png"/>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url("https://media.istockphoto.com/id/1424757003/photo/budget-and-financial-planning-concept-including-a-management-or-executive-cfo-estimating-the.jpg?s=612x612&w=0&k=20&c=-qReHcxce_QnKsWlvV1x7jOndAAjPpiuFR7fZ7AUfQ0="); /* Replace 'background.jpg' with the path to your background image */
+        background-size: cover;
+        background-position: center;
+      }
+      
+      header {
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        padding: 20px 0;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 32px;
+      }
+      main {
+        padding: 20px;
+      }
+      .intro {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .intro h2 {
+        margin-top: 0;
+        font-size: 24px;
+      }
+      .intro p {
+        font-size: 16px;
+        color: #333;
+      }
+      .intro a {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+      .intro a:hover {
+        background-color: #555;
+      }
+      .features {
+        margin-top: 30px;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .features h2 {
+        margin-top: 0;
+        font-size: 24px;
+        text-align: center;
+      }
+      .features ul {
+        list-style: none;
+        padding: 0;
+      }
+      .features li {
+        margin-bottom: 10px;
+      }
+      footer {
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+      }
+      .back-video{
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+
+      }
+      @media (min-aspect-ratio:16/9){
+        .back-video{
+          width: 100%;
+          height: auto;
+
+        }
+      }
+      @media (max-aspect-ratio:16/9){
+        .back-video{
+          width: auto;
+          height: 100%;
+          
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Expense Tracker</h1>
+    </header>
+    <main>
+      <section class="intro">
+        <h2>Welcome to Expense Tracker</h2>
+        <p>
+          Keep track of your expenses easily with our simple and intuitive
+          application.
+        </p>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Sign Up</a>
+      </section>
+      <section class="features">
+        <h2>Key Features</h2>
+        <ul>
+          <li>Track your expenses</li>
+          <li>Set budget goals</li>
+          <li>Generate expense reports</li>
+          <li>Secure and private</li>
+        </ul>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2024 Expense Tracker. All rights reserved.</p>
+    </footer>
+  </body>
+  <body>
+    <video autoplay loop muted plays-inline class="back-video">
+      <source src="https://videos.pexels.com/video-files/5253412/5253412-sd_640_360_24fps.mp4" type="video/mp4" </video>
+  </body>
+</html>

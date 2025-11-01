@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker - Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Link to your CSS file for styling -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.css"
+    />
+    <!-- Link to Chart.js CSS -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://nanonets.com/blog/content/images/2024/01/image-19.png"); /* Replace 'path/to/your/image.jpg' with the actual path to your image */
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background-color: #007bff;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      nav ul li {
+        display: inline;
+        margin-right: 20px;
+      }
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+      main {
+        padding: 20px;
+        margin-top: 100px;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(300px, 1fr)
+        ); /* Adjusted box size */
+        grid-gap: 20px;
+      }
+      .add-entry,
+      .previous-entries,
+      .combined-chart {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: calc(100% - 40px); /* Adjusted width */
+      }
+      select,
+      input,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul li {
+        margin-bottom: 10px;
+      }
+      canvas {
+        width: 100%;
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Expense Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="{% url 'reports' %}">Reports</a></li>
+          <li><a href="{% url 'logout' %}">Log Out</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="grid-container">
+        <section class="add-entry">
+          <h2>Add Expense or Income</h2>
+          <label for="entry-type">Type:</label>
+          <select id="entry-type" name="entry-type">
+            <option value="Expense">Expense</option>
+            <option value="Income">Income</option>
+          </select>
+          <label for="entry-name">Name:</label>
+          <input type="text" id="entry-name" name="name" />
+          <label for="entry-date">Date:</label>
+          <input type="date" id="entry-date" name="date" />
+          <label for="amount">Amount:</label>
+          <input type="number" id="amount" min="0" step="0.01" name="" />
+          <button onclick="addEntry()">Add</button>
+        </section>
+        <section class="previous-entries">
+          <h2>Previous Entries</h2>
+          <ul id="entries">
+            <!-- Previous entries will be dynamically added here -->
+          </ul>
+        </section>
+        <section class="combined-chart">
+          <h2>Expense and Income Chart</h2>
+          <canvas id="combined-chart"></canvas>
+        </section>
+      </div>
+    </main>
+    <footer style="margin-top: 100px">
+      <center>
+        <p>&copy; 2024 Expense Tracker. All rights reserved.</p>
+      </center>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Link to Chart.js library -->
+    <script>
+      // Function to retrieve the CSRF token from the cookie
+      function getCSRFToken() {
+        const cookieValue = document.cookie.match(/csrftoken=([^ ;]+)/);
+        return cookieValue ? cookieValue[1] : "";
+      }
+      // Sample data for previous entries (replace with actual data)
+      const previousEntries = [
+        { type: "Expense", name: "", amount: 0, date: "" },
+        { type: "Income", name: "", amount: 0, date: "" },
+        { type: "Expense", name: "", amount: 0, date: "" },
+      ];
+
+      // Initialize Chart.js for combined expense and income chart
+      const ctxCombined = document
+        .getElementById("combined-chart")
+        .getContext("2d");
+      let combinedChart;
+
+      // Function to create or update the combined chart
+      function createOrUpdateChart(labels, expenseData, incomeData) {
+        if (combinedChart) {
+          combinedChart.destroy(); // Destroy previous chart instance if exists
+        }
+        combinedChart = new Chart(ctxCombined, {
+          type: "line", // Changed to line graph
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Expenses",
+                data: expenseData,
+                fill: false,
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 2,
+              },
+              {
+                label: "Income",
+                data: incomeData,
+                fill: false,
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      // Function to update the chart
+      function updateChart() {
+        const labels = [];
+        const expenseData = [];
+        const incomeData = [];
+        previousEntries.forEach((entry) => {
+          labels.push(entry.date);
+          if (entry.type === "Expense") {
+            expenseData.push(entry.amount);
+            incomeData.push(null); // Placeholder for income if no data for that date
+          } else if (entry.type === "Income") {
+            incomeData.push(entry.amount);
+            expenseData.push(null); // Placeholder for expense if no data for that date
+          }
+        });
+        createOrUpdateChart(labels, expenseData, incomeData);
+      }
+
+      // Populate previous entries list and update chart
+      const entriesList = document.getElementById("entries");
+      previousEntries.forEach((entry) => {
+        const entryItem = document.createElement("li");
+        entryItem.textContent = `${entry.type}: ${
+          entry.name
+        } - ₹${entry.amount.toFixed(2)} (${entry.date})`; // Replaced $ with ₹
+        entriesList.appendChild(entryItem);
+      });
+      updateChart();
+
+      // Function to add new entry
+      function addEntry() {
+        const type = document.getElementById("entry-type").value;
+        const name = document.getElementById("entry-name").value;
+        const date = document.getElementById("entry-date").value;
+        const amount = parseFloat(document.getElementById("amount").value);
+        const entry = { type, name, date, amount };
+
+        // Add entry to previous entries list
+        previousEntries.push(entry);
+
+        // Update UI
+        const entryItem = document.createElement("li");
+        entryItem.textContent = `${entry.type}: ${
+          entry.name
+        } - ₹${entry.amount.toFixed(2)} (${entry.date})`; // Replaced $ with ₹
+        entriesList.appendChild(entryItem);
+
+        // Update chart
+        const labels = combinedChart.data.labels;
+        const expenseData = combinedChart.data.datasets[0].data;
+        const incomeData = combinedChart.data.datasets[1].data;
+        labels.push(entry.date);
+        if (entry.type === "Expense") {
+          expenseData.push(entry.amount);
+          incomeData.push(null);
+        } else if (entry.type === "Income") {
+          incomeData.push(entry.amount);
+          expenseData.push(null);
+        }
+        createOrUpdateChart(labels, expenseData, incomeData);
+
+        // Clear input fields
+        document.getElementById("entry-name").value = "";
+        document.getElementById("entry-date").value = "";
+        document.getElementById("amount").value = "";
+
+        fetch("/main/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(), // Include CSRF token in the request headers
+          },
+          body: JSON.stringify(entry),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error("Failed to submit entry");
+          })
+          .then((data) => {
+            console.log(data.message); // Log the response from the backend
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>
